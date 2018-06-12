@@ -37,7 +37,7 @@ struct recv_tcp {
     struct iphdr ip;
     struct tcphdr tcp;
     char buffer[BUFSIZE];
-} recv_ip;
+} recv_tcp;
 
 struct pseudo_header {
     unsigned int source_address;
@@ -48,8 +48,10 @@ struct pseudo_header {
     struct tcphdr tcp;
 } pseudo_header;
 
-struct send_tcp forge_packet(unsigned int sip, unsigned int dip, unsigned short sport, unsigned short dport,
+void covert_send(unsigned int sip, unsigned int dip, unsigned short sport, unsigned short dport,
         int ipid, int seq, int ack, char message[BUFSIZE]);
+void covert_recv(unsigned int sip, unsigned int dip, unsigned short sport, unsigned short dport,
+        int ipid, int seq, int ack);
 int generate_rand();
 unsigned int host_convert(char* ip);
 unsigned short checksum(unsigned short* ptr, int nbytes);

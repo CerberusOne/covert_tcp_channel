@@ -17,8 +17,12 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
-
+#include "covert_wrappers.h"
 
 void start_server() {
     printf("Server started\n\n");
+
+    while(1) {
+        //covert_recv();
+    }
 }

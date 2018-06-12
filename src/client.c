@@ -38,26 +38,7 @@ void start_client(unsigned int sip, unsigned int dip, unsigned short sport, unsi
         printf("input: %s\n", input);
         //sleep(1); /* notes do this for reading from a file, probably not necessary here*/
 
-        forge_packet(sip, dip, sport, dport, ipid, seq, 0, input);
-        //create IP header
-        //forge_packet(sip, dip, sport, dport, ipid, seq, ack, input);
-            //check to see if we are doing ipid encoding
-            //true: set the ipid to appropriate value
-            //false: set the ipid to random value
-
-        //create TCP header
-
-        //check to see if we are doing src port
-        //check if we are doing seq
-
-        //create socket struct
-        //create socket
-
-        //make IP header checksum
-
-        //make a pseudo header
-
-        //send the packet
+        covert_send(sip, dip, sport, dport, ipid, seq, 0, input);
         printf("sending: %s\n", input);
     }
 
