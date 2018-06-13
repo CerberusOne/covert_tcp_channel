@@ -20,12 +20,12 @@
 
 void covert_send(unsigned int sip, unsigned int dip, unsigned short sport, unsigned short dport,
         int ipid, int seq, int ack, char message[BUFSIZE]) {
-    struct send_tcp packet;
     int ch, bytes_sent;
     int sending_socket;
     struct sockaddr_in sin;
 
     for(unsigned int i = 0; i < strlen(message); i++) {
+        struct send_tcp packet;
         ch = message[i];
 
         //create IP header
@@ -112,9 +112,9 @@ void covert_send(unsigned int sip, unsigned int dip, unsigned short sport, unsig
     }
 }
 
-void covert_recv(unsigned int sip, unsigned int dip, unsigned short sport, unsigned short dport,
-        int ipid, int seq, int ack) {
+char covert_recv(unsigned int sip, unsigned short sport, int ipid, int seq, int ack) {
     int recv_socket, n, bytes_recv;
+    //struct recv_tcp recv_packet;
 
     if((n = recv_socket = socket(AF_INET, SOCK_RAW, 6)) < 0) {
         perror("receiving socket failed to open (root maybe required)");
@@ -128,21 +128,52 @@ void covert_recv(unsigned int sip, unsigned int dip, unsigned short sport, unsig
                 printf("Receiving Data(%d): %c\n", bytes_recv, recv_tcp.ip.id);
                 //fprintf(output, "%c", recv_tcp.ip.id);
                 //fflush(output);
+                return recv_tcp.ip.id;
             } else if(seq == 1) {
                 printf("Receiving Data(%d): %c\n", bytes_recv, recv_tcp.tcp.seq);
                 //fprintf(output, "%c", recv_tcp.tcp.seq);
                 //fflush(output);
+                return recv_tcp.tcp.seq;
+
             //Bounced packets
                 //client must send packet with server's source IP to another host.
                     //flags: --client --sip <the server> --ack?
-
             } else if(ack == 1) {
                 printf("Receiving Data: %c\n", recv_tcp.tcp.ack_seq);
                 //fprintf(output, "%c", recv_tcp.tcp.ack_seq);
                 //fflush(output);
+                return recv_tcp.tcp.ack_seq;
+            }
+        }
+
+    //doesn't check source IP in case we're bouncing off hosts
+    } else {
+        if((recv_tcp.tcp.syn == 1) && (ntohs(recv_tcp.tcp.dest) == sport)) {
+            if(ipid == 1) {
+                //printf("Receiving Data(%d): %c\n", bytes_recv, recv_tcp.ip.id);
+                //fprintf(output, "%c", recv_tcp.ip.id);
+                //fflush(output);
+                return recv_tcp.ip.id;
+            } else if(seq == 1) {
+                //printf("Receiving Data(%d): %c\n", bytes_recv, recv_tcp.tcp.seq);
+                //fprintf(output, "%c", recv_tcp.tcp.seq);
+                //fflush(output);
+                return recv_tcp.tcp.seq;
+
+            //Bounced packets
+                //client must send packet with server's source IP to another host.
+                    //flags: --client --sip <the server> --ack?
+            } else if(ack == 1) {
+                //printf("Receiving Data: %c\n", recv_tcp.tcp.ack_seq);
+                //fprintf(output, "%c", recv_tcp.tcp.ack_seq);
+                //fflush(output);
+                return recv_tcp.tcp.ack_seq;
             }
         }
     }
+
+    close(recv_socket);
+    return 0;
 }
 
 int generate_rand() {

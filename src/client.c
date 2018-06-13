@@ -34,13 +34,16 @@ void start_client(unsigned int sip, unsigned int dip, unsigned short sport, unsi
         printf("Source Port: random");
     }
 
-    while((n = scanf("%s", input)) == 1) {
-        printf("input: %s\n", input);
-        //sleep(1); /* notes do this for reading from a file, probably not necessary here*/
+    while(1) {
+        printf("Input: ");
+        fgets(input, BUFSIZE, stdin);
+//        if((n = sscanf("%s", input)) >= 0) {
+            //sleep(1); /* notes do this for reading from a file, probably not necessary here*/
 
-        covert_send(sip, dip, sport, dport, ipid, seq, 0, input);
-        printf("sending: %s\n", input);
+            //covert_send(sip, dip, sport, dport, ipid, seq, 0, input);
+            covert_send(sip, dip, sport, dport, ipid, seq, 0, input);
+            printf("sending: %s\n", input);
+ //       }
     }
-
 }
 

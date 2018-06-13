@@ -19,6 +19,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-void start_server();
+
+void start_server(unsigned int sip, unsigned short sport, int ipid, int seq, int ack);
 
 #endif

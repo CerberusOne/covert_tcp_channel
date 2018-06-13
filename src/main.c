@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
     }
 
     if(server_opt)
-        start_server(sip, dip, sport, dport, ipid, seq, ack);
+        start_server(sip, sport, ipid, seq, ack);
 
     if(client_opt) {
         if(ack == 1) {

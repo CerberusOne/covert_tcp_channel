@@ -50,8 +50,7 @@ struct pseudo_header {
 
 void covert_send(unsigned int sip, unsigned int dip, unsigned short sport, unsigned short dport,
         int ipid, int seq, int ack, char message[BUFSIZE]);
-void covert_recv(unsigned int sip, unsigned int dip, unsigned short sport, unsigned short dport,
-        int ipid, int seq, int ack);
+char covert_recv(unsigned int sip, unsigned short sport, int ipid, int seq, int ack);
 int generate_rand();
 unsigned int host_convert(char* ip);
 unsigned short checksum(unsigned short* ptr, int nbytes);

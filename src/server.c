@@ -19,10 +19,13 @@
 #include <stdio.h>
 #include "covert_wrappers.h"
 
-void start_server() {
+void start_server(unsigned int sip, unsigned short sport, int ipid, int seq, int ack) {
+    char ch;
+
     printf("Server started\n\n");
 
     while(1) {
-        //covert_recv();
+        ch = covert_recv(sip, sport, ipid, seq, ack);
+        printf("Output: %c\n", ch);
     }
 }
