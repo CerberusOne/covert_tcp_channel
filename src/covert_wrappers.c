@@ -31,6 +31,8 @@ void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dpor
         struct send_tcp packet;
         ch = message[i];
 
+        sleep(1);
+
         //create IP header
         packet.ip.ihl = 5;
         packet.ip.version = 4;
