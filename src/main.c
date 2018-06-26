@@ -54,10 +54,8 @@ static void print_usage(void) {
 
 
 int main(int argc, char** argv) {
-    int arg, client_opt = 0, server_opt = 0, dip, sip,
-        ipid = 0, seq = 0, ack = 0;
-
-    char dip_string[BUFFERSIZE], sip_string[BUFFERSIZE];
+    int arg, client_opt = 0, server_opt = 0, ipid = 0, seq = 0, ack = 0, test = 0;
+    char dip[BUFFERSIZE], sip[BUFFERSIZE];
     unsigned short sport, dport;
 
     /* make sure user has root privilege */
@@ -79,7 +77,8 @@ int main(int argc, char** argv) {
             {"ipid",    no_argument,        0,  6 },
             {"seq",     no_argument,        0,  7 },
             {"ack",     no_argument,        0,  8 },
-            {0,         0,                  0,  0   }
+            {"test",    no_argument,        0,  9 },
+            {0,         0,                  0,  0 }
         };
 
         arg = getopt_long(argc, argv, SOCKOPTS, long_options, &option_index);
@@ -98,14 +97,14 @@ int main(int argc, char** argv) {
                 printf("Entering client mode\n");
                 break;
             case 2:
-                dip = host_convert(optarg);
-                strncpy(dip_string, optarg, BUFFERSIZE);
-                printf("Destination IP: %s\n", dip_string);
+                //dip = host_convert(optarg);
+                strncpy(dip, optarg, BUFFERSIZE);
+                printf("Destination IP: %s\n", dip);
                 break;
             case 3:
-                sip = host_convert(optarg);
-                strncpy(sip_string, optarg, BUFFERSIZE);
-                printf("Forging source IP (Remote Bounce): %s\n", dip_string);
+                //sip = host_convert(optarg);
+                strncpy(sip, optarg, BUFFERSIZE);
+                printf("Forging source IP (Remote Bounce): %s\n", dip);
                 break;
             case 4:
                 dport = atoi(optarg);
@@ -127,12 +126,17 @@ int main(int argc, char** argv) {
                 ack = 1;
                 printf("Forging ACK for remote bounce\n");
                 break;
+            case 9:
+                test = 1;
+                printf("Using testing specs\n");
+                break;
             default: /*  '?' */
                 print_usage();
                 exit(1);
         }
     }
 
+    //ensure we are running as atleast server
     if(client_opt == 0 && server_opt == 0) {
         printf("Using default mode: server\n");
         server_opt = 1;
@@ -141,20 +145,31 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
-    //default to ipid mode if no forge arguments were made
-    if(ipid + seq + ack == 0) {
-        printf("Using default mode: IPID\n");
+    //testing mode
+    if(test == 1) {
+        strcpy(sip, "127.0.0.1");
+        strcpy(dip, "127.0.0.1");
+        dport = 7000;
+        sport = 7000;
         ipid = 1;
-    } else if (ipid + seq + ack!= 1) {
-        printf("Only 1 of IPID, SEQ, or ACK can be used... exiting\n");
-        exit(1);
-    } else if(dip == 0) {
-        dip = host_convert("127.0.0.1");
-        printf("No destination provided, using localhost\n");
+    } else {
+        //default to ipid mode if no forge arguments were made
+        if(ipid + seq + ack == 0) {
+            printf("Using default mode: IPID\n");
+            ipid = 1;
+        } else if (ipid + seq + ack!= 1) {
+            printf("Only 1 of IPID, SEQ, or ACK can be used... exiting\n");
+            exit(1);
+        } else if(dip == 0) {
+            //dip = host_convert("127.0.0.1");
+            printf("No destination provided, using localhost\n");
+        }
     }
 
-    if(server_opt)
+    if(server_opt) {
         start_server(sip, sport, ipid, seq, ack);
+        //start_server("127.0.0.1", 7000, 1, 0, 0);
+    }
 
     if(client_opt) {
         if(ack == 1) {
@@ -162,6 +177,7 @@ int main(int argc, char** argv) {
         }
 
         start_client(sip, dip, sport, dport, ipid, seq);
+        //start_client("127.0.0.1", "127.0.0.1", 7000, 7000, 1, 0);
     }
 }
 

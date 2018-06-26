@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include "covert_wrappers.h"
 
-void start_server(unsigned int sip, unsigned short sport, int ipid, int seq, int ack) {
+void start_server(char *sip, unsigned short sport, int ipid, int seq, int ack) {
     char ch;
 
     printf("Server started\n\n");

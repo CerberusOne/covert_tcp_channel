@@ -19,9 +19,8 @@
 #include <stdio.h>
 #include "covert_wrappers.h"
 
-void start_client(unsigned int sip, unsigned int dip, unsigned short sport, unsigned short dport,
+void start_client(char *sip, char *dip, unsigned short sport, unsigned short dport,
         int ipid, int seq) {
-    int n;
     char input[BUFSIZE];
 
     puts("Client started\n\n");
@@ -41,8 +40,7 @@ void start_client(unsigned int sip, unsigned int dip, unsigned short sport, unsi
             //sleep(1); /* notes do this for reading from a file, probably not necessary here*/
 
             //covert_send(sip, dip, sport, dport, ipid, seq, 0, input);
-            covert_send(sip, dip, sport, dport, ipid, seq, 0, input);
-            printf("sending: %s\n", input);
+            covert_send(sip, dip, sport, dport, ipid, seq, input);
  //       }
     }
 }

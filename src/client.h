@@ -19,8 +19,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "covert_wrappers.h"
 
-void start_client();
+void start_client(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq);
 
 #endif

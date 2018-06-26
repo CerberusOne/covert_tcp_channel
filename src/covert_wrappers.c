@@ -18,11 +18,14 @@
 #include <stdlib.h>
 #include "covert_wrappers.h"
 
-void covert_send(unsigned int sip, unsigned int dip, unsigned short sport, unsigned short dport,
-        int ipid, int seq, int ack, char message[BUFSIZE]) {
+void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq, char message[BUFSIZE]) {
     int ch, bytes_sent;
     int sending_socket;
     struct sockaddr_in sin;
+    unsigned int sip_binary, dip_binary;
+
+    sip_binary = host_convert(sip);
+    dip_binary = host_convert(dip);
 
     for(unsigned int i = 0; i < strlen(message); i++) {
         struct send_tcp packet;
@@ -45,8 +48,8 @@ void covert_send(unsigned int sip, unsigned int dip, unsigned short sport, unsig
         packet.ip.ttl = 64;
         packet.ip.protocol = IPPROTO_TCP;
         packet.ip.check = 0;
-        packet.ip.saddr = sip;
-        packet.ip.daddr = dip;
+        packet.ip.saddr = sip_binary;
+        packet.ip.daddr = dip_binary;
 
         //create TCP header
         //check if source port was set
@@ -107,14 +110,19 @@ void covert_send(unsigned int sip, unsigned int dip, unsigned short sport, unsig
         packet.tcp.check = checksum((unsigned short *) &pseudo_header, 32);
 
         //send the packet
-        bytes_sent = sendto(sending_socket, &packet, 40, 0, (struct sockaddr *)&sin, sizeof(sin));
+        if((bytes_sent = sendto(sending_socket, &packet, 40, 0, (struct sockaddr *)&sin, sizeof(sin))) < 0) {
+        //if((bytes_sent = send(sending_socket, &packet, 40, 0, (struct sockaddr *)&sin, sizeof(sin))) < 0) {
+            perror("sendto");
+        }
         printf("Sending Data(%d): %c\n", bytes_sent, ch);
     }
 }
 
-char covert_recv(unsigned int sip, unsigned short sport, int ipid, int seq, int ack) {
+char covert_recv(char *sip, unsigned short sport, int ipid, int seq, int ack) {
     int recv_socket, n, bytes_recv;
+    unsigned int sip_binary;
     //struct recv_tcp recv_packet;
+    sip_binary = host_convert(sip);
 
     if((n = recv_socket = socket(AF_INET, SOCK_RAW, 6)) < 0) {
         perror("receiving socket failed to open (root maybe required)");
@@ -123,7 +131,7 @@ char covert_recv(unsigned int sip, unsigned short sport, int ipid, int seq, int 
     bytes_recv = read(recv_socket, (struct recv_tcp *)&recv_tcp, 9999);
 
     if(sport == 0) {    //from any port
-        if((recv_tcp.tcp.syn == 1) && (recv_tcp.ip.saddr == sip)) {
+        if((recv_tcp.tcp.syn == 1) && (recv_tcp.ip.saddr == sip_binary)) {
             if(ipid == 1) {
                 printf("Receiving Data(%d): %c\n", bytes_recv, recv_tcp.ip.id);
                 //fprintf(output, "%c", recv_tcp.ip.id);
