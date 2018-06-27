@@ -54,7 +54,7 @@ static void print_usage(void) {
 
 
 int main(int argc, char** argv) {
-    int arg, client_opt = 0, server_opt = 0, ipid = 0, seq = 0, ack = 0, test = 0;
+    int arg, client_opt = 0, server_opt = 0, ipid = 0, seq = 0, ack = 0, localtest = 0, nettest = 0;
     char dip[BUFFERSIZE], sip[BUFFERSIZE];
     unsigned short sport, dport;
 
@@ -77,7 +77,8 @@ int main(int argc, char** argv) {
             {"ipid",    no_argument,        0,  6 },
             {"seq",     no_argument,        0,  7 },
             {"ack",     no_argument,        0,  8 },
-            {"test",    no_argument,        0,  9 },
+            {"localtest",    no_argument,   0,  9 },
+            {"nettest", no_argument,        0,  10 },
             {0,         0,                  0,  0 }
         };
 
@@ -127,8 +128,12 @@ int main(int argc, char** argv) {
                 printf("Forging ACK for remote bounce\n");
                 break;
             case 9:
-                test = 1;
-                printf("Using testing specs\n");
+                localtest = 1;
+                printf("Using local testing specs\n");
+                break;
+            case 10:
+                nettest = 1;
+                printf("Using net testing specs\n");
                 break;
             default: /*  '?' */
                 print_usage();
@@ -146,9 +151,16 @@ int main(int argc, char** argv) {
     }
 
     //testing mode
-    if(test == 1) {
+    if(localtest == 1) {
         strcpy(sip, "127.0.0.1");
         strcpy(dip, "127.0.0.1");
+        dport = 7000;
+        sport = 7000;
+        ipid = 1;
+    } else if(nettest == 1) {
+        printf("Client: 192.168.0.18\n192.168.0.20\n");
+        strcpy(sip, "192.168.0.18");
+        strcpy(dip, "192.168.0.20");
         dport = 7000;
         sport = 7000;
         ipid = 1;
