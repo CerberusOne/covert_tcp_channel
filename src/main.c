@@ -55,7 +55,7 @@ static void print_usage(void) {
 
 int main(int argc, char** argv) {
     int arg, client_opt = 0, server_opt = 0, ipid = 0, seq = 0, ack = 0, localtest = 0, nettest = 0;
-    char dip[BUFFERSIZE], sip[BUFFERSIZE];
+    char dip[BUFFERSIZE], sip[BUFFERSIZE], filename[BUFFERSIZE];
     unsigned short sport, dport;
 
     /* make sure user has root privilege */
@@ -79,6 +79,7 @@ int main(int argc, char** argv) {
             {"ack",     no_argument,        0,  8 },
             {"localtest",    no_argument,   0,  9 },
             {"nettest", no_argument,        0,  10 },
+            {"file",    no_argument,        0,  11},
             {0,         0,                  0,  0 }
         };
 
@@ -135,6 +136,9 @@ int main(int argc, char** argv) {
                 nettest = 1;
                 printf("Using net testing specs\n");
                 break;
+            case 11:
+                strncpy(filename, optarg, BUFFERSIZE);
+                printf("File: %s\n", filename);
             default: /*  '?' */
                 print_usage();
                 exit(1);
@@ -158,7 +162,7 @@ int main(int argc, char** argv) {
         sport = 7000;
         ipid = 1;
     } else if(nettest == 1) {
-        printf("Client: 192.168.0.18\n192.168.0.20\n");
+        printf("Client: 192.168.0.18\nServer: 192.168.0.20\n");
         strcpy(sip, "192.168.0.18");
         strcpy(dip, "192.168.0.20");
         dport = 80;
