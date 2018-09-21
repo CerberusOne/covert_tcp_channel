@@ -26,6 +26,9 @@ void start_server(char *sip, unsigned short sport, int ipid, int seq, int ack) {
 
     while(1) {
         ch = covert_recv(sip, sport, ipid, seq, ack);
-        printf("Output: %c\n", ch);
+        if(ch != 0) {
+            printf("Output: %c\n", ch);
+            ch = 0;
+        }
     }
 }
