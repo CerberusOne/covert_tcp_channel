@@ -18,106 +18,103 @@
 #include <stdlib.h>
 #include "covert_wrappers.h"
 
-void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq, char message[BUFSIZE]) {
-    int ch, bytes_sent;
+void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq, char input) {
+    int bytes_sent;
     int sending_socket;
     struct sockaddr_in sin;
     unsigned int sip_binary, dip_binary;
+    struct send_tcp packet;
 
     sip_binary = host_convert(sip);
     dip_binary = host_convert(dip);
 
-    for(unsigned int i = 0; i < strlen(message); i++) {
-        struct send_tcp packet;
-        ch = message[i];
 
-        sleep(1);
+    sleep(1);
 
-        //create IP header
-        packet.ip.ihl = 5;
-        packet.ip.version = 4;
-        packet.ip.tos = 0;
-        packet.ip.tot_len = htons(40);
+    //create IP header
+    packet.ip.ihl = 5;
+    packet.ip.version = 4;
+    packet.ip.tos = 0;
+    packet.ip.tot_len = htons(40);
 
-        //check if we are forging IPID
-        if(ipid == 0) {
-            packet.ip.id = generate_rand(255.0);    //random, to not look suspecious
-        } else {
-            packet.ip.id = ch;  //enter a single ASCII character into the field
-        }
-
-        packet.ip.frag_off = 0;
-        packet.ip.ttl = 64;
-        packet.ip.protocol = IPPROTO_TCP;
-        packet.ip.check = 0;
-        packet.ip.saddr = sip_binary;
-        packet.ip.daddr = dip_binary;
-
-        //create TCP header
-        //check if source port was set
-        if(sport == 0) {
-            packet.tcp.source = generate_rand(10000.0);
-        } else {
-            packet.tcp.source = htons(sport);
-        }
-
-        //check if we are forging SEQ
-        if(seq == 0) {
-            packet.tcp.seq = generate_rand(10000.0);
-        } else {
-            packet.tcp.seq = ch;
-        }
-
-        packet.tcp.dest = htons(dport);
-        packet.tcp.ack_seq = 0;
-        packet.tcp.res1 = 0;
-        packet.tcp.doff = 5;
-        packet.tcp.fin = 0;
-        packet.tcp.syn = 1;
-        packet.tcp.rst = 0;
-        packet.tcp.psh = 0;
-        packet.tcp.ack = 0;
-        packet.tcp.urg = 0;
-        packet.tcp.res2 = 0;
-        packet.tcp.window = htons(512);
-        packet.tcp.check = 0;
-        packet.tcp.urg_ptr = 0;
-
-        //creat socket struct
-        sin.sin_family = AF_INET;
-        sin.sin_port = packet.tcp.source;
-        sin.sin_addr.s_addr = packet.ip.daddr;
-
-        //open socket for sending
-        sending_socket = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
-
-        if(sending_socket < 0) {
-            perror("sending socket failed to open (root maybe required)");
-            exit(1);
-        }
-
-        //create an IP checksum value
-        packet.ip.check = checksum((unsigned short *) &send_tcp.ip, 20);
-
-        pseudo_header.source_address = packet.ip.saddr;
-        pseudo_header.dest_address = packet.ip.daddr;
-        pseudo_header.placeholder = 0;
-        pseudo_header.protocol = IPPROTO_TCP;
-        pseudo_header.tcp_length = htons(20);
-
-        //copy packet's tcp into pseudo header tcp
-        bcopy((char *) &packet.tcp, (char *) &pseudo_header.tcp, 20);
-
-        //create a TCP checksum value
-        packet.tcp.check = checksum((unsigned short *) &pseudo_header, 32);
-
-        //send the packet
-        if((bytes_sent = sendto(sending_socket, &packet, 40, 0, (struct sockaddr *)&sin, sizeof(sin))) < 0) {
-        //if((bytes_sent = send(sending_socket, &packet, 40, 0, (struct sockaddr *)&sin, sizeof(sin))) < 0) {
-            perror("sendto");
-        }
-        printf("Sending Data(%d): %c\n", bytes_sent, ch);
+    //check if we are forging IPID
+    if(ipid == 0) {
+        packet.ip.id = generate_rand(255.0);    //random, to not look suspecious
+    } else {
+        packet.ip.id = input;  //enter a single ASCII character into the field
     }
+
+    packet.ip.frag_off = 0;
+    packet.ip.ttl = 64;
+    packet.ip.protocol = IPPROTO_TCP;
+    packet.ip.check = 0;
+    packet.ip.saddr = sip_binary;
+    packet.ip.daddr = dip_binary;
+
+    //create TCP header
+    //check if source port was set
+    if(sport == 0) {
+        packet.tcp.source = generate_rand(10000.0);
+    } else {
+        packet.tcp.source = htons(sport);
+    }
+
+    //check if we are forging SEQ
+    if(seq == 0) {
+        packet.tcp.seq = generate_rand(10000.0);
+    } else {
+        packet.tcp.seq = input;
+    }
+
+    packet.tcp.dest = htons(dport);
+    packet.tcp.ack_seq = 0;
+    packet.tcp.res1 = 0;
+    packet.tcp.doff = 5;
+    packet.tcp.fin = 0;
+    packet.tcp.syn = 1;
+    packet.tcp.rst = 0;
+    packet.tcp.psh = 0;
+    packet.tcp.ack = 0;
+    packet.tcp.urg = 0;
+    packet.tcp.res2 = 0;
+    packet.tcp.window = htons(512);
+    packet.tcp.check = 0;
+    packet.tcp.urg_ptr = 0;
+
+    //creat socket struct
+    sin.sin_family = AF_INET;
+    sin.sin_port = packet.tcp.source;
+    sin.sin_addr.s_addr = packet.ip.daddr;
+
+    //open socket for sending
+    sending_socket = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+
+    if(sending_socket < 0) {
+        perror("sending socket failed to open (root maybe required)");
+        exit(1);
+    }
+
+    //create an IP checksum value
+    packet.ip.check = checksum((unsigned short *) &send_tcp.ip, 20);
+
+    pseudo_header.source_address = packet.ip.saddr;
+    pseudo_header.dest_address = packet.ip.daddr;
+    pseudo_header.placeholder = 0;
+    pseudo_header.protocol = IPPROTO_TCP;
+    pseudo_header.tcp_length = htons(20);
+
+    //copy packet's tcp into pseudo header tcp
+    bcopy((char *) &packet.tcp, (char *) &pseudo_header.tcp, 20);
+
+    //create a TCP checksum value
+    packet.tcp.check = checksum((unsigned short *) &pseudo_header, 32);
+
+    //send the packet
+    if((bytes_sent = sendto(sending_socket, &packet, 40, 0, (struct sockaddr *)&sin, sizeof(sin))) < 0) {
+    //if((bytes_sent = send(sending_socket, &packet, 40, 0, (struct sockaddr *)&sin, sizeof(sin))) < 0) {
+        perror("sendto");
+    }
+    printf("Sending Data(%d): %c\n", bytes_sent, input);
 }
 
 char covert_recv(char *sip, unsigned short sport, int ipid, int seq, int ack) {

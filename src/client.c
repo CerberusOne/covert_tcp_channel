@@ -20,9 +20,10 @@
 #include "covert_wrappers.h"
 
 void start_client(char *sip, char *dip, unsigned short sport, unsigned short dport,
-        int ipid, int seq) {
-    char input[BUFSIZE];
+        int ipid, int seq, char* filename) {
+    char input;
     FILE *file;
+
 
 
     puts("Client started\n\n");
@@ -35,15 +36,15 @@ void start_client(char *sip, char *dip, unsigned short sport, unsigned short dpo
         printf("Source Port: random");
     }
 
-    while(1) {
-        printf("Input: ");
-        fgets(input, BUFSIZE, stdin);
-//        if((n = sscanf("%s", input)) >= 0) {
-            //sleep(1); /* notes do this for reading from a file, probably not necessary here*/
-
-            //covert_send(sip, dip, sport, dport, ipid, seq, 0, input);
-            covert_send(sip, dip, sport, dport, ipid, seq, input);
- //       }
+    if((file = fopen(filename, "rb")) == NULL) {
+        perror("fopen can't open file");
+        exit(1);
     }
+
+    while((input = fgetc(file)) != EOF) {
+        covert_send(sip, dip, sport, dport, ipid, seq, input);
+    }
+
+    return;
 }
 

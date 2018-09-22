@@ -38,9 +38,10 @@ static void print_usage(void) {
     puts ("Usage options: \n"
             "\t[s]erver -   (default) sets to server mode\n"
             "\t[c]lient -   sets to client mode\n"
-            "\t[f]orge  -   forging options\n"
+            "\t[f]ile   -   file to send/receive\n"
+            "\tForging options\n"
             //forge options
-            "\n\t\tIP\n"
+            "\t\tIP\n"
             "\t\t[dip]      -   IP destination field\n"
             "\t\t[sip]      -   IP source field\n"
             "\t\t[ipid]     -   (default) IP ID field\n"
@@ -51,6 +52,21 @@ static void print_usage(void) {
             "\t\t[ack]      -   TCP ACK field\n");
 }
 
+static struct option long_options[] = {
+    {"server",  no_argument,        0,  0 },
+    {"client",  no_argument,        0,  1 },
+    {"dip",     required_argument,  0,  2 },
+    {"sip",     required_argument,  0,  3 },
+    {"dport",   required_argument,  0,  4 },
+    {"sport",   required_argument,  0,  5 },
+    {"ipid",    no_argument,        0,  6 },
+    {"seq",     no_argument,        0,  7 },
+    {"ack",     no_argument,        0,  8 },
+    {"localtest",    no_argument,   0,  9 },
+    {"nettest", no_argument,        0,  10 },
+    {"file",    required_argument,  0,  11 },
+    {0,         0,                  0,  0 }
+};
 
 
 int main(int argc, char** argv) {
@@ -67,21 +83,6 @@ int main(int argc, char** argv) {
     /*  parse arguments */
     while (1) {
         int option_index = 0;
-        static struct option long_options[] = {
-            {"server",  no_argument,        0,  0 },
-            {"client",  no_argument,        0,  1 },
-            {"dip",     required_argument,  0,  2 },
-            {"sip",     required_argument,  0,  3 },
-            {"dport",   required_argument,  0,  4 },
-            {"sport",   required_argument,  0,  5 },
-            {"ipid",    no_argument,        0,  6 },
-            {"seq",     no_argument,        0,  7 },
-            {"ack",     no_argument,        0,  8 },
-            {"localtest",    no_argument,   0,  9 },
-            {"nettest", no_argument,        0,  10 },
-            {"file",    no_argument,        0,  11},
-            {0,         0,                  0,  0 }
-        };
 
         arg = getopt_long(argc, argv, SOCKOPTS, long_options, &option_index);
 
@@ -139,6 +140,7 @@ int main(int argc, char** argv) {
             case 11:
                 strncpy(filename, optarg, BUFFERSIZE);
                 printf("File: %s\n", filename);
+                break;
             default: /*  '?' */
                 print_usage();
                 exit(1);
@@ -192,7 +194,7 @@ int main(int argc, char** argv) {
             printf("ack decoding only for server\n");
         }
 
-        start_client(sip, dip, sport, dport, ipid, seq);
+        start_client(sip, dip, sport, dport, ipid, seq, filename);
         //start_client("127.0.0.1", "127.0.0.1", 7000, 7000, 1, 0);
     }
 }

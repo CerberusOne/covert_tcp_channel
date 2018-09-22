@@ -49,7 +49,7 @@ struct pseudo_header {
     struct tcphdr tcp;
 } pseudo_header;
 
-void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq, char message[BUFSIZE]);
+void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq, char message);
 char covert_recv(char *sip, unsigned short sport, int ipid, int seq, int ack);
 int generate_rand();
 unsigned int host_convert(char* ip);
