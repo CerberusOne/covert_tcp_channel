@@ -35,7 +35,7 @@ void start_server(char *sip, unsigned short sport, int ipid, int seq, int ack, c
         if(input != 0) {
             printf("Output: %c\n", input);
             input = 0;
-        } else {
+        } else if (input == EOF){
             return;
         }
     }
