@@ -49,8 +49,8 @@ struct pseudo_header {
     struct tcphdr tcp;
 } pseudo_header;
 
-void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq, char message);
-char covert_recv(char *sip, unsigned short sport, int ipid, int seq, int ack);
+void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq, int tos, char input);
+char covert_recv(char *sip, unsigned short sport, int ipid, int seq, int ack, int tos);
 int generate_rand();
 unsigned int host_convert(char* ip);
 unsigned short checksum(unsigned short* ptr, int nbytes);

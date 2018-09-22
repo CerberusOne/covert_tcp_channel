@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include "covert_wrappers.h"
 
-void start_server(char *sip, unsigned short sport, int ipid, int seq, int ack, char* filename) {
+void start_server(char *sip, unsigned short sport, int ipid, int seq, int ack, int tos, char* filename) {
     char input;
     FILE *file;
 
@@ -31,7 +31,7 @@ void start_server(char *sip, unsigned short sport, int ipid, int seq, int ack, c
     }
 
     while(1) {
-        input = covert_recv(sip, sport, ipid, seq, ack);
+        input = covert_recv(sip, sport, ipid, seq, ack, tos);
         if(input != 0) {
             printf("Output: %c\n", input);
             fprintf(file, "%c", input);

@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include "covert_wrappers.h"
 
-void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq, char input) {
+void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq, int tos, char input) {
     int bytes_sent;
     int sending_socket;
     struct sockaddr_in sin;
@@ -34,7 +34,7 @@ void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dpor
     //create IP header
     packet.ip.ihl = 5;
     packet.ip.version = 4;
-    packet.ip.tos = 0;
+    //packet.ip.tos = 0;        //lets mess with this
     packet.ip.tot_len = htons(40);
 
     //check if we are forging IPID
@@ -42,6 +42,13 @@ void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dpor
         packet.ip.id = generate_rand(255.0);    //random, to not look suspecious
     } else {
         packet.ip.id = input;  //enter a single ASCII character into the field
+    }
+
+    //check if we are forging TOS
+    if(tos == 0) {
+        packet.ip.tos = 0;
+    } else {
+        packet.ip.tos = input;
     }
 
     packet.ip.frag_off = 0;
@@ -117,7 +124,7 @@ void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dpor
     printf("Sending Data(%d): %c\n", bytes_sent, input);
 }
 
-char covert_recv(char *sip, unsigned short sport, int ipid, int seq, int ack) {
+char covert_recv(char *sip, unsigned short sport, int ipid, int seq, int ack, int tos) {
     int recv_socket, n, bytes_recv;
     unsigned int sip_binary;
     //struct recv_tcp recv_packet;
@@ -136,6 +143,9 @@ char covert_recv(char *sip, unsigned short sport, int ipid, int seq, int ack) {
                 //fprintf(output, "%c", recv_tcp.ip.id);
                 //fflush(output);
                 return recv_tcp.ip.id;
+            } else if(tos == 1) {
+                printf("Receiving Data(%d): %c\n", bytes_recv, recv_tcp.ip.tos);
+                return recv_tcp.ip.tos;
             } else if(seq == 1) {
                 printf("Receiving Data(%d): %c\n", bytes_recv, recv_tcp.tcp.seq);
                 //fprintf(output, "%c", recv_tcp.tcp.seq);
@@ -161,6 +171,8 @@ char covert_recv(char *sip, unsigned short sport, int ipid, int seq, int ack) {
                 //fprintf(output, "%c", recv_tcp.ip.id);
                 //fflush(output);
                 return recv_tcp.ip.id;
+            } else if(tos ==1) {
+                return recv_tcp.ip.tos;
             } else if(seq == 1) {
                 //printf("Receiving Data(%d): %c\n", bytes_recv, recv_tcp.tcp.seq);
                 //fprintf(output, "%c", recv_tcp.tcp.seq);

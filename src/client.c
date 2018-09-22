@@ -20,7 +20,7 @@
 #include "covert_wrappers.h"
 
 void start_client(char *sip, char *dip, unsigned short sport, unsigned short dport,
-        int ipid, int seq, char* filename) {
+        int ipid, int seq, int tos, char* filename) {
     char input;
     FILE *file;
 
@@ -42,7 +42,7 @@ void start_client(char *sip, char *dip, unsigned short sport, unsigned short dpo
     }
 
     while((input = fgetc(file)) != EOF) {
-        covert_send(sip, dip, sport, dport, ipid, seq, input);
+        covert_send(sip, dip, sport, dport, ipid, seq, tos, input);
     }
 
     return;

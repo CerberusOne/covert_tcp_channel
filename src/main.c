@@ -62,15 +62,16 @@ static struct option long_options[] = {
     {"ipid",    no_argument,        0,  6 },
     {"seq",     no_argument,        0,  7 },
     {"ack",     no_argument,        0,  8 },
-    {"localtest",    no_argument,   0,  9 },
-    {"nettest", no_argument,        0,  10 },
-    {"file",    required_argument,  0,  11 },
+    {"tos",     no_argument,        0,  9 },
+    {"localtest",    no_argument,   0,  10 },
+    {"nettest", no_argument,        0,  11 },
+    {"file",    required_argument,  0,  12 },
     {0,         0,                  0,  0 }
 };
 
 
 int main(int argc, char** argv) {
-    int arg, client_opt = 0, server_opt = 0, ipid = 0, seq = 0, ack = 0, localtest = 0, nettest = 0;
+    int arg, client_opt = 0, server_opt = 0, ipid = 0, seq = 0, ack = 0, tos = 0, localtest = 0, nettest = 0;
     char dip[BUFFERSIZE], sip[BUFFERSIZE], filename[BUFFERSIZE];
     unsigned short sport, dport;
 
@@ -130,14 +131,18 @@ int main(int argc, char** argv) {
                 printf("Forging ACK for remote bounce\n");
                 break;
             case 9:
+                tos = 1;
+                printf("Forging TOS for remote bounce\n");
+                break;
+            case 10:
                 localtest = 1;
                 printf("Using local testing specs\n");
                 break;
-            case 10:
+            case 11:
                 nettest = 1;
                 printf("Using net testing specs\n");
                 break;
-            case 11:
+            case 12:
                 strncpy(filename, optarg, BUFFERSIZE);
                 printf("File: %s\n", filename);
                 break;
@@ -185,7 +190,7 @@ int main(int argc, char** argv) {
     }
 
     if(server_opt) {
-        start_server(sip, sport, ipid, seq, ack, filename);
+        start_server(sip, sport, ipid, seq, ack, tos, filename);
         //start_server("127.0.0.1", 7000, 1, 0, 0);
     }
 
@@ -194,7 +199,7 @@ int main(int argc, char** argv) {
             printf("ack decoding only for server\n");
         }
 
-        start_client(sip, dip, sport, dport, ipid, seq, filename);
+        start_client(sip, dip, sport, dport, ipid, seq, tos, filename);
         //start_client("127.0.0.1", "127.0.0.1", 7000, 7000, 1, 0);
     }
 }

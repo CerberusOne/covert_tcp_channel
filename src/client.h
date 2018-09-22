@@ -20,6 +20,6 @@
 #define CLIENT_H
 
 
-void start_client(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq, char* filename);
+void start_client(char *sip, char *dip, unsigned short sport, unsigned short dport, int ipid, int seq, int tos, char* filename);
 
 #endif

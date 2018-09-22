@@ -20,6 +20,6 @@
 #define SERVER_H
 
 
-void start_server(char *sip, unsigned short sport, int ipid, int seq, int ack, char* filename);
+void start_server(char *sip, unsigned short sport, int ipid, int seq, int ack, int tos, char* filename);
 
 #endif
