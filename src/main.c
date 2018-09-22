@@ -185,7 +185,7 @@ int main(int argc, char** argv) {
     }
 
     if(server_opt) {
-        start_server(sip, sport, ipid, seq, ack);
+        start_server(sip, sport, ipid, seq, ack, filename);
         //start_server("127.0.0.1", 7000, 1, 0, 0);
     }
 

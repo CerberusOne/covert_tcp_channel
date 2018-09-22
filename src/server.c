@@ -19,16 +19,24 @@
 #include <stdio.h>
 #include "covert_wrappers.h"
 
-void start_server(char *sip, unsigned short sport, int ipid, int seq, int ack) {
-    char ch;
+void start_server(char *sip, unsigned short sport, int ipid, int seq, int ack, char* filename) {
+    char input;
+    FILE *file;
 
     printf("Server started\n\n");
 
+    if((file = fopen(filename, "wb")) == NULL) {
+        perror("fopen can't open file");
+        exit(1);
+    }
+
     while(1) {
-        ch = covert_recv(sip, sport, ipid, seq, ack);
-        if(ch != 0) {
-            printf("Output: %c\n", ch);
-            ch = 0;
+        input = covert_recv(sip, sport, ipid, seq, ack);
+        if(input != 0) {
+            printf("Output: %c\n", input);
+            input = 0;
+        } else {
+            return;
         }
     }
 }
