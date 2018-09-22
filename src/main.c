@@ -167,8 +167,8 @@ int main(int argc, char** argv) {
         printf("Client: 192.168.0.18\nServer: 192.168.0.20\n");
         strcpy(sip, "192.168.0.18");
         strcpy(dip, "192.168.0.20");
-        dport = 80;
-        sport = 80;
+        dport = 22;
+        sport = 22;
         ipid = 1;
     } else {
         //default to ipid mode if no forge arguments were made

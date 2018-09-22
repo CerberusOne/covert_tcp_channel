@@ -34,6 +34,7 @@ void start_server(char *sip, unsigned short sport, int ipid, int seq, int ack, c
         input = covert_recv(sip, sport, ipid, seq, ack);
         if(input != 0) {
             printf("Output: %c\n", input);
+            fprintf(file, "%c", input);
             input = 0;
         } else if (input == EOF){
             return;
