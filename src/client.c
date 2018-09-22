@@ -22,6 +22,8 @@
 void start_client(char *sip, char *dip, unsigned short sport, unsigned short dport,
         int ipid, int seq) {
     char input[BUFSIZE];
+    FILE *file;
+
 
     puts("Client started\n\n");
 
