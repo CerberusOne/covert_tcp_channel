@@ -180,7 +180,7 @@ int main(int argc, char** argv) {
         if(ipid + seq + ack + tos == 0) {
             printf("Using default mode: IPID\n");
             ipid = 1;
-        } else if (ipid + seq + ack!= 1) {
+        } else if (ipid + seq + ack + tos != 1) {
             printf("Only 1 of IPID, SEQ, or ACK can be used... exiting\n");
             exit(1);
         } else if(dip == 0) {
