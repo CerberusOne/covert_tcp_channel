@@ -73,7 +73,7 @@ static struct option long_options[] = {
 int main(int argc, char** argv) {
     int arg, client_opt = 0, server_opt = 0, ipid = 0, seq = 0, ack = 0, tos = 0, localtest = 0, nettest = 0;
     char dip[BUFFERSIZE], sip[BUFFERSIZE], filename[BUFFERSIZE];
-    unsigned short sport, dport;
+    unsigned short sport = 0, dport = 0;
 
     /* make sure user has root privilege */
     if(geteuid() != 0) {
@@ -103,20 +103,20 @@ int main(int argc, char** argv) {
             case 2:
                 //dip = host_convert(optarg);
                 strncpy(dip, optarg, BUFFERSIZE);
-                printf("Destination IP: %s\n", dip);
+                printf("Forging destination IP: %s\n", dip);
                 break;
             case 3:
                 //sip = host_convert(optarg);
                 strncpy(sip, optarg, BUFFERSIZE);
-                printf("Forging source IP (Remote Bounce): %s\n", dip);
+                printf("Forging source IP: %s\n", dip);
                 break;
             case 4:
                 dport = atoi(optarg);
-                printf("Destination port: %d\n", dport);
+                printf("Forging destination port: %d\n", dport);
                 break;
             case 5:
                 sport = atoi(optarg);
-                printf("Source port: %d\n", sport);
+                printf("Forging source port: %d\n", sport);
                 break;
             case 6:
                 ipid = 1;

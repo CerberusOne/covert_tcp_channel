@@ -41,6 +41,7 @@ void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dpor
     if(ipid == 0) {
         packet.ip.id = generate_rand(255.0);    //random, to not look suspecious
     } else {
+        printf("IPID: ");
         packet.ip.id = input;  //enter a single ASCII character into the field
     }
 
@@ -48,6 +49,7 @@ void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dpor
     if(tos == 0) {
         packet.ip.tos = 0;
     } else {
+        printf("TOS: ");
         packet.ip.tos = input;
     }
 
@@ -70,6 +72,7 @@ void covert_send(char *sip, char *dip, unsigned short sport, unsigned short dpor
     if(seq == 0) {
         packet.tcp.seq = generate_rand(10000.0);
     } else {
+        printf("SEQ: ");
         packet.tcp.seq = input;
     }
 
@@ -170,13 +173,16 @@ char covert_recv(char *sip, unsigned short sport, int ipid, int seq, int ack, in
                 //printf("Receiving Data(%d): %c\n", bytes_recv, recv_tcp.ip.id);
                 //fprintf(output, "%c", recv_tcp.ip.id);
                 //fflush(output);
+                printf("IPID: ");
                 return recv_tcp.ip.id;
             } else if(tos ==1) {
+                printf("TOS: ");
                 return recv_tcp.ip.tos;
             } else if(seq == 1) {
                 //printf("Receiving Data(%d): %c\n", bytes_recv, recv_tcp.tcp.seq);
                 //fprintf(output, "%c", recv_tcp.tcp.seq);
                 //fflush(output);
+                printf("SEQ: ");
                 return recv_tcp.tcp.seq;
 
             //Bounced packets
@@ -186,6 +192,7 @@ char covert_recv(char *sip, unsigned short sport, int ipid, int seq, int ack, in
                 //printf("Receiving Data: %c\n", recv_tcp.tcp.ack_seq);
                 //fprintf(output, "%c", recv_tcp.tcp.ack_seq);
                 //fflush(output);
+                printf("ACK: ");
                 return recv_tcp.tcp.ack_seq;
             }
         }
