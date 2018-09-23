@@ -177,7 +177,7 @@ int main(int argc, char** argv) {
         ipid = 1;
     } else {
         //default to ipid mode if no forge arguments were made
-        if(ipid + seq + ack == 0) {
+        if(ipid + seq + ack + tos == 0) {
             printf("Using default mode: IPID\n");
             ipid = 1;
         } else if (ipid + seq + ack!= 1) {
