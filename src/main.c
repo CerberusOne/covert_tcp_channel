@@ -66,12 +66,13 @@ static struct option long_options[] = {
     {"localtest",    no_argument,   0,  10 },
     {"nettest", no_argument,        0,  11 },
     {"file",    required_argument,  0,  12 },
+    {"time",    required_argument,  0,  13 },
     {0,         0,                  0,  0 }
 };
 
 
 int main(int argc, char** argv) {
-    int arg, client_opt = 0, server_opt = 0, ipid = 0, seq = 0, ack = 0, tos = 0, localtest = 0, nettest = 0;
+    int arg, client_opt = 0, server_opt = 0, ipid = 0, seq = 0, ack = 0, tos = 0, localtest = 0, nettest = 0, time = 0;
     char dip[BUFFERSIZE], sip[BUFFERSIZE], filename[BUFFERSIZE];
     unsigned short sport = 0, dport = 0;
 
@@ -146,6 +147,10 @@ int main(int argc, char** argv) {
                 strncpy(filename, optarg, BUFFERSIZE);
                 printf("File: %s\n", filename);
                 break;
+            case 13:
+                time = atoi(optarg);
+                printf("Time: %d\n", time);
+                break;
             default: /*  '?' */
                 print_usage();
                 exit(1);
@@ -199,7 +204,7 @@ int main(int argc, char** argv) {
             printf("ack decoding only for server\n");
         }
 
-        start_client(sip, dip, sport, dport, ipid, seq, tos, filename);
+        start_client(sip, dip, sport, dport, ipid, seq, tos, filename, time);
         //start_client("127.0.0.1", "127.0.0.1", 7000, 7000, 1, 0);
     }
 }
